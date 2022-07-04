@@ -1,5 +1,12 @@
 #%%
+from distutils.fancy_getopt import OptionDummy
 import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision
+import torchvision.datasets as datasets
+import torchvision.transforms as transforms
 import matplotlib
 import ipykernel
 import numpy as np
@@ -10,6 +17,8 @@ import nibabel as nib
 from numpy import expand_dims
 from nilearn import plotting
 from nilearn import image
+from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 
 # plotting.plot_glass_brain("example.nii")   
 mri_file = 'adexample.nii'
@@ -161,3 +170,5 @@ show_slices([slice_0, slice_1, slice_2])
 # slice_1 = img_new[:, 127, :, 0]
 # slice_2 = img_new[:, :, 127, 0]
 # show_slices_([slice_0, slice_1, slice_2])
+
+

@@ -8,3 +8,4 @@ nilearn==0.9.0
 scikit-learn~=0.24.2
 tensorflow-addons~=0.13.0
 tensorflow-probability~=0.13.0
+torch>= 1.4.0
