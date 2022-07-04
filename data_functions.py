@@ -19,7 +19,11 @@ from nilearn import image
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-
+# function to load data
+def load_image(mri_file):
+    img = nib.load(mri_file)
+    img_data = img.get_fdata()
+    return img_data
 
 # show the same slice of all dimensions
 def show_slices(slices):
@@ -81,3 +85,21 @@ def show_all_slices_dot(slices):
 
     fig.tight_layout()
     plt.show()
+
+
+def add_channel(img):
+    img_data = np.array(img)
+
+    data_1 = np.copy(img_data)
+    b = np.copy(data_1[:,:,:,0])
+    print(b.shape)
+    data_1[:,:,:,0] = b
+
+    data_2 = np.copy(img_data)
+    s = np.ones_like(b)
+    print(s.shape)
+    data_2[:,:,:,0] = s
+
+    img_s = np.concatenate((data_1,data_2), axis=-1)
+    return img_s
+
