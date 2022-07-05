@@ -12,8 +12,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import nilearn
 import nibabel as nib
+import monai
+import glob
 
-from numpy import expand_dims
 from nilearn import plotting
 from nilearn import image
 from torch.utils.data import DataLoader
@@ -24,6 +25,12 @@ def load_image(mri_file):
     img = nib.load(mri_file)
     img_data = img.get_fdata()
     return img_data
+
+def load_images(data_path='/Users/misheton/Downloads/Data/**/*.nii'):
+    files = glob.glob(data_path, 
+                   recursive = False)
+    return files
+    
 
 # show the same slice of all dimensions
 def show_slices(slices):
