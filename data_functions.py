@@ -14,6 +14,8 @@ import nilearn
 import nibabel as nib
 import monai
 import glob
+import fnmatch
+import os.path
 
 from nilearn import plotting
 from nilearn import image
@@ -26,12 +28,19 @@ def load_image(mri_file):
     img_data = img.get_fdata()
     return img_data
 
-print('getcwd:      ', os.getcwd())
+# print('getcwd:      ', os.getcwd())
 
-# def load_images(data_path='/Users/misheton/Downloads/Data/**/*.nii'):
-#     files = glob.glob(data_path, 
-#                    recursive = True)
-#     return files
+def load_images(data_path):
+    files = []
+    files.append(glob.glob(data_path, 
+                   recursive = True))
+    return files
+
+# def load_images(data_path):
+#     path = data_path
+#     dir_list = os.listdir(path)
+#     for filename in fnmatch.filter(dir_list,'*.c'):
+#         print(os.path.join(dirpath, filename))
     
 
 # show the same slice of all dimensions
