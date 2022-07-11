@@ -3,7 +3,10 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-from data_functions import load_image, show_slices, show_all_slices, show_all_slices_dot, add_channel
+from data_functions import load_image, load_images, show_slices, show_all_slices, show_all_slices_dot, add_channel
+
+# data_path = os.sep.join([".", "workspace", "data", "medical", "ixi", "IXI-T1"])
+files = load_images('/Users/misheton/Downloads/Data/*.nii')
 
 # getting our image data 
 img_data = load_image('adexample.nii')
