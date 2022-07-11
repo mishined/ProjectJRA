@@ -26,19 +26,12 @@ def load_image(mri_file):
     img_data = img.get_fdata()
     return img_data
 
-<<<<<<< HEAD
 print('getcwd:      ', os.getcwd())
 
 # def load_images(data_path='/Users/misheton/Downloads/Data/**/*.nii'):
 #     files = glob.glob(data_path, 
 #                    recursive = True)
 #     return files
-=======
-def load_images(data_path='/Users/misheton/Downloads/Data/**/*.nii'):
-    files = glob.glob(data_path, 
-                   recursive = False)
-    return files
->>>>>>> 234f59e4c1b63a1f9463a3417fa42cf0f97796e4
     
 
 # show the same slice of all dimensions
