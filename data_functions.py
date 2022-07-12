@@ -22,26 +22,34 @@ from nilearn import image
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-# function to load data
-def load_image(mri_file):
-    img = nib.load(mri_file)
-    img_data = img.get_fdata()
-    return img_data
-
 # print('getcwd:      ', os.getcwd())
-
-def load_images(data_path):
+# function to extract the files needed from a path
+def load_paths(data_path):
     files = []
     files.append(glob.glob(data_path, 
                    recursive = True))
     return files
 
-# def load_images(data_path):
-#     path = data_path
-#     dir_list = os.listdir(path)
-#     for filename in fnmatch.filter(dir_list,'*.c'):
-#         print(os.path.join(dirpath, filename))
-    
+# function to load data from a single file
+def load_image(mri_file):
+    img = nib.load(mri_file)
+    img_data = img.get_fdata()
+    return img_data
+
+# function to load the images from a path
+def load_images_from_path(data_path):
+    files = load_paths(data_path)
+    images = []
+    for file in files[0]:
+        images.append(load_image(file))
+    return images
+
+# function to load the images from files
+def load_images_from_files(files):
+    images = []
+    for file in files[0]:
+        images.append(load_image(file))
+    return images
 
 # show the same slice of all dimensions
 def show_slices(slices):
