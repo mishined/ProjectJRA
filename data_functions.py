@@ -16,6 +16,8 @@ import monai
 import glob
 import fnmatch
 import os.path
+import csv
+import pandas as pd
 
 from nilearn import plotting
 from nilearn import image
@@ -36,12 +38,25 @@ def load_image(mri_file):
     img_data = img.get_fdata()
     return img_data
 
-# function to load the images from a path
+# # function to load the images from a path
+# '/Users/misheton/Downloads/Data1/AD/*.nii'
 def load_images_from_path(data_path):
-    files = load_paths(data_path)
+    files = load_paths(data_path + "/*/*/*/*/*/*.nii")
     images = []
-    for file in files[0]:
-        images.append(load_image(file))
+    # only reading one csv file that contains both AD and CN information
+    # manually change the Image Data ID in the file (can do through pandas)
+    data = read_csv(data_path + "/*.csv")
+    for a in range(len(files[0])):
+        id = files[0][a][-11:-4]
+        index = data.ImageDataID[data.ImageDataID == id].index[0]
+        img = load_image(files[0][a])
+        if data.Group[index] == "AD":
+            img = add_channel_ones(img)
+            print("AD")
+        else:
+            img = add_channel_zeros(img)
+            print("CN")
+        images.append(img)
     return images
 
 # function to load the images from files
@@ -50,6 +65,26 @@ def load_images_from_files(files):
     for file in files[0]:
         images.append(load_image(file))
     return images
+
+def open_csv(data_path):
+    file = open(data_path)
+    csvreader = csv.reader(file)
+
+    rows = []
+    header = next(csvreader)
+    for row in csvreader:
+        rows.append(row)
+    # print(header)
+    # print(rows)
+    # print(rows[0])
+    return rows
+
+def read_csv(data_path):
+    file = glob.glob(data_path, 
+                   recursive = True)
+    data = pd.read_csv(file[0])
+    return data
+
 
 # show the same slice of all dimensions
 def show_slices(slices):
@@ -113,17 +148,29 @@ def show_all_slices_dot(slices):
     plt.show()
 
 
-def add_channel(img):
+def add_channel_ones(img):
     img_data = np.array(img)
 
     data_1 = np.copy(img_data)
     b = np.copy(data_1[:,:,:,0])
-    print(b.shape)
     data_1[:,:,:,0] = b
 
     data_2 = np.copy(img_data)
     s = np.ones_like(b)
-    print(s.shape)
+    data_2[:,:,:,0] = s
+
+    img_s = np.concatenate((data_1,data_2), axis=-1)
+    return img_s
+
+def add_channel_zeros(img):
+    img_data = np.array(img)
+
+    data_1 = np.copy(img_data)
+    b = np.copy(data_1[:,:,:,0])
+    data_1[:,:,:,0] = b
+
+    data_2 = np.copy(img_data)
+    s = np.zeros_like(b)
     data_2[:,:,:,0] = s
 
     img_s = np.concatenate((data_1,data_2), axis=-1)
