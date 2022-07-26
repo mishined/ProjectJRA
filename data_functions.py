@@ -51,10 +51,10 @@ def load_images_from_path(data_path):
         index = data.ImageDataID[data.ImageDataID == id].index[0]
         img = load_image(files[0][a])
         if data.Group[index] == "AD":
-            img = add_channel_ones(img)
+            img = add_channel_zeros(img)
             print("AD")
         else:
-            img = add_channel_zeros(img)
+            img = add_channel_ones(img)
             print("CN")
         images.append(img)
     return images
