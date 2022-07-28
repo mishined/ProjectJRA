@@ -183,7 +183,7 @@ class Solver(nn.Module):
         utils.translate_using_reference(nets_ema, args, src.x, ref.x, ref.y, fname)
 
         fname = ospj(args.result_dir, 'video_ref.mp4')
-        print('Working on {}...'.format(fname))
+        print('Working on {}...'.format(fname)) 
         utils.video_ref(nets_ema, args, src.x, ref.x, ref.y, fname)
 
     @torch.no_grad()

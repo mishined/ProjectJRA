@@ -9,13 +9,14 @@ from data_functions import load_image, load_paths, load_images_from_path, load_i
 # data_path = os.sep.join([".", "workspace", "data", "medical", "ixi", "IXI-T1"])
 
 # test the load_path function
-files = load_paths('/Users/misheton/Downloads/Data1/*/*/*/*/*/*.nii')
+# files = load_paths('/Users/misheton/Downloads/Data1/*/*/*/*/*/*.nii')
 # for file in files[0]:
     # print(file)
 
 # test the load_images_from_paths function
 # change the path to get both AD and CN once the function is ready to tell which one is what
 images = load_images_from_path('/Users/misheton/Downloads/Data1')
+
 
 slice_0 = images[0][90, :, :, 0]
 slice_1 = images[0][:, 127, :, 0]
@@ -26,7 +27,7 @@ slice_2 = images[0][:, :, 127, 0]
 # img_data = load_image('/Users/misheton/Downloads/Data1/AD/006_S_4192/MPRAGE/2011-12-15_14_16_21.0/S133458/ADNI_006_S_4192_MR_MPRAGE_br_raw_20111216104600692_163_S133458_I272410.nii')
 
 # what type is the image
-# print(type(img_data)) 
+print(type(images)) 
 # the shape of the image
 print(images[0].shape)
 
