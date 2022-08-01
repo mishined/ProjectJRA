@@ -18,7 +18,9 @@ import fnmatch
 import os.path
 import csv
 import pandas as pd
+import random 
 
+from random import randint
 from nilearn import plotting
 from nilearn import image
 from torch.utils.data import DataLoader
@@ -79,6 +81,7 @@ def open_csv(data_path):
     # print(rows[0])
     return rows
 
+# read a csv file and return the data 
 def read_csv(data_path):
     file = glob.glob(data_path, 
                    recursive = True)
@@ -147,7 +150,7 @@ def show_all_slices_dot(slices):
     fig.tight_layout()
     plt.show()
 
-
+# add extra channel of ones to the colour channels
 def add_channel_ones(img):
     img_data = np.array(img)
 
@@ -162,6 +165,7 @@ def add_channel_ones(img):
     img_s = np.concatenate((data_1,data_2), axis=-1)
     return img_s
 
+# add extra channel of zeros to the colour channels 
 def add_channel_zeros(img):
     img_data = np.array(img)
 
@@ -175,4 +179,68 @@ def add_channel_zeros(img):
 
     img_s = np.concatenate((data_1,data_2), axis=-1)
     return img_s
+
+def add_channel_slice(img, slice):
+    img_data = np.array(img)
+    # array of the image
+    data_1 = np.copy(img_data)
+    # array of the 0 channel
+    b = np.copy(data_1[:,:,:,0])
+    data_1[:,:,:,0] = b
+
+    data_2 = np.copy(img_data)
+    a = np.copy(data_1[:,:,:,1])
+    data_2[:,:,:,0] = a
+
+    data_3 = np.copy(img_data)
+    s = np.full_like(b, slice)
+    data_3[:,:,:,0] = s
+
+    img_s = np.concatenate((data_1, data_2, data_3), axis=-1)
+    return img_s
+
+def add_channel_slice(img, slice):
+    # create three different arrays with the different channels and concatenate them
+    img_data = np.array(img)
+    # save if the image has AD or HC channel
+    hcad = img_data[:,:,:,1]
+
+    # remove the second channel 
+    img_del = np.delete(img_data,1,3)
+
+    # array of the image
+    data_1 = np.copy(img_del)
+    # array of the 0 channel
+    b = np.copy(data_1[:,:,:,0])
+    data_1[:,:,:,0] = b
+
+    # array with channel 2 - the AD or HC desired output
+    data_2 = np.copy(img_del)
+    a = np.copy(hcad)
+    data_2[:,:,:,0] = a
+
+    # array with channel 3 - the number of the slice
+    data_3 = np.copy(img_del)
+    s = np.full_like(b, slice)
+    data_3[:,:,:,0] = s
+
+    img_s = np.concatenate((data_1, data_2, data_3), axis=-1)
+    return img_s
+
+# choose a random slice from an image
+def random_slice(img):
+    # get the maximum slice number
+    a = img.shape[0]
+    # get a random number from the number of slices
+    n = random.randint(0,a)
+    # add a channel with the slice number
+    slice_1 = add_channel_slice(img, n)
+    # take only the randomly chosen slice
+    slice = slice_1[n, :, :, :]
+    # slice number
+    print(n)
+    # slice shape
+    return slice
+
+
 

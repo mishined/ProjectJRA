@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-from data_functions import load_image, load_paths, load_images_from_path, load_images_from_files, show_slices, show_all_slices, show_all_slices_dot, add_channel_ones, add_channel_zeros
+from data_functions import load_image, load_paths, load_images_from_path, load_images_from_files, show_slices, show_all_slices, show_all_slices_dot, add_channel_ones, add_channel_zeros, random_slice
 
 # data_path = os.sep.join([".", "workspace", "data", "medical", "ixi", "IXI-T1"])
 
@@ -15,10 +15,17 @@ from data_functions import load_image, load_paths, load_images_from_path, load_i
 
 # test the load_images_from_paths function
 # change the path to get both AD and CN once the function is ready to tell which one is what
-images = load_images_from_path('/Users/misheton/Downloads/Data1')
+images = load_images_from_path('/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
+
+# test how the slice cutter works (random slice and add channel with the number of it)
+# slice = random_slice(images[10])
+# print("slice shape")
+# print(slice.shape)
+# print("slice 1,1,:")
+# print(slice[:,:,2])
 
 
-slice_0 = images[0][90, :, :, 0]
+slice_0 = slice[:,:,0]
 slice_1 = images[0][:, 127, :, 0]
 slice_2 = images[0][:, :, 127, 0]
 # show_slices([slice_0, slice_1, slice_2])
