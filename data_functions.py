@@ -45,11 +45,23 @@ def load_image(mri_file):
 def load_images_from_path(data_path):
     files = load_paths(data_path + "/*/*/*/*/*/*.nii")
     images = []
+    ids = []
+    # print(len(files[0]))
+    # print(files[0])
+    # print(files[0][0])
     # only reading one csv file that contains both AD and CN information
     # manually change the Image Data ID in the file (can do through pandas)
     data = read_csv(data_path + "/*.csv")
-    for a in range(len(files[0])):
+    print(len(files[0]))
+    for a in range(20):
+        print(a)
+        print(files[0][a])
         id = files[0][a][-11:-4]
+        ids.append(id)
+        # print(id)
+        if id[0] == "_":
+            id = id[1:]
+        # print(id)
         index = data.ImageDataID[data.ImageDataID == id].index[0]
         img = load_image(files[0][a])
         if data.Group[index] == "AD":
@@ -59,7 +71,7 @@ def load_images_from_path(data_path):
             img = add_channel_ones(img)
             print("CN")
         images.append(img)
-    return images
+    return images,ids
 
 # function to load the images from files
 def load_images_from_files(files):
@@ -180,24 +192,24 @@ def add_channel_zeros(img):
     img_s = np.concatenate((data_1,data_2), axis=-1)
     return img_s
 
-def add_channel_slice(img, slice):
-    img_data = np.array(img)
-    # array of the image
-    data_1 = np.copy(img_data)
-    # array of the 0 channel
-    b = np.copy(data_1[:,:,:,0])
-    data_1[:,:,:,0] = b
+# def add_channel_slice(img, slice):
+#     img_data = np.array(img)
+#     # array of the image
+#     data_1 = np.copy(img_data)
+#     # array of the 0 channel
+#     b = np.copy(data_1[:,:,:,0])
+#     data_1[:,:,:,0] = b
 
-    data_2 = np.copy(img_data)
-    a = np.copy(data_1[:,:,:,1])
-    data_2[:,:,:,0] = a
+#     data_2 = np.copy(img_data)
+#     a = np.copy(data_1[:,:,:,1])
+#     data_2[:,:,:,0] = a
 
-    data_3 = np.copy(img_data)
-    s = np.full_like(b, slice)
-    data_3[:,:,:,0] = s
+#     data_3 = np.copy(img_data)
+#     s = np.full_like(b, slice)
+#     data_3[:,:,:,0] = s
 
-    img_s = np.concatenate((data_1, data_2, data_3), axis=-1)
-    return img_s
+#     img_s = np.concatenate((data_1, data_2, data_3), axis=-1)
+#     return img_s
 
 def add_channel_slice(img, slice):
     # create three different arrays with the different channels and concatenate them
