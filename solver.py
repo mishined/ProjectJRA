@@ -17,8 +17,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 from model import build_model
 from checkpoint import CheckpointIO
+from data_loader import InputFetcher
 import utils as utils
 from eval import calculate_metrics
 
