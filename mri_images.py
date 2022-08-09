@@ -34,6 +34,29 @@ class MRI_Images:
 
         self.shuffled_slices, self.sample = self.shuffle_and_batch(self.manipulated_images)
 
+        self.img_size = 256
+        self.style_dim = 64
+        self.w_hpf = 1
+        self.latent_dim = 16
+        self.num_domains = 2
+
+        self.mode = 'train'
+        self.lr = 0.001
+        self.resume_iter = 0
+        self.total_iters = 3
+        self.lambda_ds = 1
+        # ds_iter
+        self.print_every = 1
+        self.sample_every = 1
+        # sample_di
+        self.save_every = 1
+        self.eval_every = 1
+        self.result_dir = '/Users/misheton/OneDrive-UniversityofSussex/JRA/results'
+        # lambda_reg
+        # lambda_sty
+        # lambda_cyc
+        self.loader_ref = None
+
     def check_ids_len_and_image(self, images, ids):
         if len(images) == len(ids):
             return True
