@@ -21,7 +21,7 @@ import torch.nn.functional as F
 from model import build_model
 from checkpoint import CheckpointIO
 from data_loader import InputFetcher
-import utils as utils
+import core.utils as utils
 from eval import calculate_metrics
 
 
@@ -46,16 +46,17 @@ class Solver(nn.Module):
                     continue
                 self.optims[net] = torch.optim.Adam(
                     params=self.nets[net].parameters(),
-                    lr=args.f_lr if net == 'mapping_network' else args.lr,
-                    betas=[args.beta1, args.beta2],
-                    weight_decay=args.weight_decay)
+                    lr=args.lr)
+                    # lr=args.f_lr if net == 'mapping_network' else args.lr) previous line but original
+                    # betas=[args.beta1, args.beta2],
+                    # weight_decay=args.weight_decay)
 
-            self.ckptios = [
-                CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets.ckpt'), data_parallel=True, **self.nets),
-                CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets_ema.ckpt'), data_parallel=True, **self.nets_ema),
-                CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_optims.ckpt'), **self.optims)]
-        else:
-            self.ckptios = [CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets_ema.ckpt'), data_parallel=True, **self.nets_ema)]
+        #     self.ckptios = [
+        #         CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets.ckpt'), data_parallel=True, **self.nets),
+        #         CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets_ema.ckpt'), data_parallel=True, **self.nets_ema),
+        #         CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_optims.ckpt'), **self.optims)]
+        # else:
+        #     self.ckptios = [CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets_ema.ckpt'), data_parallel=True, **self.nets_ema)]
 
         self.to(self.device)
         for name, network in self.named_children():
@@ -76,23 +77,27 @@ class Solver(nn.Module):
         for optim in self.optims.values():
             optim.zero_grad()
 
-    def train(self, loaders):
+    def train(self):
         args = self.args
         nets = self.nets
         nets_ema = self.nets_ema
         optims = self.optims
 
         # fetch random validation images for debugging
-        fetcher = InputFetcher(loaders.src, loaders.ref, args.latent_dim, 'train')
-        fetcher_val = InputFetcher(loaders.val, None, args.latent_dim, 'val')
+        print("hi")
+        fetcher = InputFetcher(args.sample, args.loader_ref, args.latent_dim, 'train')
+        print("hi2")
+        fetcher_val = InputFetcher(args.sample, None, args.latent_dim, 'val')
+        print("hi3")
         inputs_val = next(fetcher_val)
+        print("hi4")
 
         # resume training if necessary
         if args.resume_iter > 0:
             self._load_checkpoint(args.resume_iter)
 
         # remember the initial value of ds weight
-        initial_lambda_ds = args.lambda_ds
+        # initial_lambda_ds = args.lambda_ds
 
         print('Start training...')
         start_time = time.time()
@@ -139,8 +144,8 @@ class Solver(nn.Module):
             moving_average(nets.style_encoder, nets_ema.style_encoder, beta=0.999)
 
             # decay weight for diversity sensitive loss
-            if args.lambda_ds > 0:
-                args.lambda_ds -= (initial_lambda_ds / args.ds_iter)
+            # if args.lambda_ds > 0:
+            #     args.lambda_ds -= (initial_lambda_ds / args.ds_iter)
 
             # print out log info
             if (i+1) % args.print_every == 0:
@@ -177,8 +182,8 @@ class Solver(nn.Module):
         os.makedirs(args.result_dir, exist_ok=True)
         self._load_checkpoint(args.resume_iter)
 
-        src = next(InputFetcher(loaders.src, None, args.latent_dim, 'test'))
-        ref = next(InputFetcher(loaders.ref, None, args.latent_dim, 'test'))
+        src = next(InputFetcher(args.sample, None, args.latent_dim, 'test'))
+        ref = next(InputFetcher(args.sample, None, args.latent_dim, 'test'))
 
         fname = ospj(args.result_dir, 'reference.jpg')
         print('Working on {}...'.format(fname))
