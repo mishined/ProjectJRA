@@ -59,6 +59,8 @@ from mri_images import MRI_Images
 
 from model import * 
 from solver import *
+from data_loader import *
+from simple_gan import *
 
 import tensorflow as tf
 import torch.nn as nn
@@ -66,18 +68,24 @@ import torch.nn as nn
 if __name__ == "__main__":
     imags = MRI_Images('/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
 
-    print(imags.sample[0].shape)
+    # print(imags.sample[0].shape)
 
-    input = tf.convert_to_tensor(imags.sample)
+    # input = tf.convert_to_tensor(imags.sample)
 
-    generator = Generator()
-    discriminator = Discriminator()
+    # generator = Generator(256, 64, w_hpf=1)
+    # discriminator = Discriminator(img_size = 256, num_domains = 2)
 
-    # resblk = ResBlk(nn.Module)
-    # AdaIN(nn.Module)
-    # AdainResBlk(nn.Module)
-    # HighPass(nn.Module)
-    # MappingNetwork(nn.Module)
-    
-    # StyleEncoder(nn.Module)
-    build_model([generator, discriminator])
+    # model = build_model(imags)
+    solver = Solver(imags)
+
+    # solver.train()
+
+    # model = GAN(imags)
+
+    # generator = nn.DataParallel(Generator(args.img_size, args.style_dim, w_hpf=args.w_hpf))
+    # mapping_network = nn.DataParallel(MappingNetwork(args.latent_dim, args.style_dim, args.num_domains))
+    # style_encoder = nn.DataParallel(StyleEncoder(args.img_size, args.style_dim, args.num_domains))
+    # discriminator = nn.DataParallel(Discriminator(args.img_size, args.num_domains))
+    # generator_ema = copy.deepcopy(generator)
+    # mapping_network_ema = copy.deepcopy(mapping_network)
+    # style_encoder_ema = copy.deepcopy(style_encoder)
