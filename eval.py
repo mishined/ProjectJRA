@@ -18,7 +18,7 @@ import torch
 from fid import calculate_fid_given_paths
 from lpips import calculate_lpips_given_images
 from data_loader import get_eval_loader
-from wing import utils
+from core import utils
 
 
 @torch.no_grad()
