@@ -175,11 +175,11 @@ class InputFetcher:
         self.mode = mode
 
     def _fetch_inputs(self):
-        try:
-            x, y = next(self.iter)
-        except (AttributeError, StopIteration):
-            self.iter = iter(self.loader)
-            x, y = next(self.iter)
+        # try:
+        #     x, y = next(self.iter)
+        # except (AttributeError, StopIteration):
+        self.iter = iter(self.loader)
+        x, y = next(self.iter),0
         return x, y
 
     def _fetch_refs(self):
@@ -208,5 +208,5 @@ class InputFetcher:
         else:
             raise NotImplementedError
 
-        return Munch({k: v.to(self.device)
-                      for k, v in inputs.items()})
+        # return Munch({k: v.to(self.device)
+        #               for k, v in inputs.items()})
