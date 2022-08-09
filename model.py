@@ -138,6 +138,11 @@ class Generator(nn.Module):
             nn.InstanceNorm2d(dim_in, affine=True),
             nn.LeakyReLU(0.2),
             nn.Conv2d(dim_in, 3, 1, 1, 0))
+        self.to_grid = nn.Sequential(
+            nn.InstanceNorm2d(dim_in, affine=True),
+            nn.LeakyReLU(0.2),
+            nn.Conv2d(dim_in, 2, 1, 1, 0))
+        
 
         # down/up-sampling blocks
         repeat_num = int(np.log2(img_size)) - 4
@@ -171,12 +176,15 @@ class Generator(nn.Module):
             if (masks is not None) and (x.size(2) in [32, 64, 128]):
                 cache[x.size(2)] = x
             x = block(x)
+
         for block in self.decode:
             x = block(x, s)
             if (masks is not None) and (x.size(2) in [32, 64, 128]):
                 mask = masks[0] if x.size(2) in [32] else masks[1]
                 mask = F.interpolate(mask, size=x.size(2), mode='bilinear')
                 x = x + self.hpf(mask * cache[x.size(2)])
+
+        
         return self.to_rgb(x)
 
 
@@ -288,11 +296,11 @@ def build_model(args):
                      mapping_network=mapping_network_ema,
                      style_encoder=style_encoder_ema)
 
-    if args.w_hpf > 0:
-        fan = nn.DataParallel(FAN(fname_pretrained=args.wing_path).eval())
-        fan.get_heatmap = fan.module.get_heatmap
-        nets.fan = fan
-        nets_ema.fan = fan
+    # if args.w_hpf > 0:
+    #     fan = nn.DataParallel(FAN(fname_pretrained=args.wing_path).eval())
+    #     fan.get_heatmap = fan.module.get_heatmap
+    #     nets.fan = fan
+    #     nets_ema.fan = fan
 
     return nets, nets_ema
 
