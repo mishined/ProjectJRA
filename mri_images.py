@@ -41,9 +41,9 @@ class MRI_Images:
         self.num_domains = 2
 
         self.mode = 'train'
-        self.lr = 0.001
+        self.lr = 1e-4
         self.resume_iter = 0
-        self.total_iters = 3
+        self.total_iters = 10
         self.lambda_ds = 1
         # ds_iter
         self.print_every = 1
@@ -56,6 +56,7 @@ class MRI_Images:
         # lambda_sty
         # lambda_cyc
         self.loader_ref = None
+        
 
     def check_ids_len_and_image(self, images, ids):
         if len(images) == len(ids):
