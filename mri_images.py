@@ -205,3 +205,17 @@ class MRI_Images:
             batch_end=random.randint(batch_beginning, len(images)-1)
             batch0 = images[batch_beginning:batch_end]
         return images, batch0
+
+    
+    # get a list of all the labels
+    def get_labels(self, ids,data_path):
+        labels = []
+        data = self.read_csv(data_path + "/*.csv")
+        for id in ids:
+            index = data.ImageDataID[data.ImageDataID == id].index[0]
+            if data.Group[index] == "AD":
+                label = "AD"
+            else:
+                label = "CN"
+            labels.append(label)
+        return labels
