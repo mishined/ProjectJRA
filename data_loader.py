@@ -54,24 +54,21 @@ class ReferenceDataset(data.Dataset):
 
     def _make_dataset(self, root):
         domains = os.listdir(root)
-        fnames, fnames2, labels = [], [], []
+        fnames, labels = [], []
         for idx, domain in enumerate(sorted(domains)):
             class_dir = os.path.join(root, domain)
             cls_fnames = listdir(class_dir)
             fnames += cls_fnames
-            fnames2 += random.sample(cls_fnames, len(cls_fnames))
             labels += [idx] * len(cls_fnames)
-        return list(zip(fnames, fnames2)), labels
+        return list(fnames), labels
 
     def __getitem__(self, index):
-        fname, fname2 = self.samples[index]
+        fname = self.samples[index]
         label = self.targets[index]
         img = Image.open(fname).convert('RGB')
-        img2 = Image.open(fname2).convert('RGB')
         if self.transform is not None:
             img = self.transform(img)
-            img2 = self.transform(img2)
-        return img, img2, label
+        return img, label
 
     def __len__(self):
         return len(self.targets)
@@ -184,21 +181,20 @@ class InputFetcher:
 
     def _fetch_refs(self):
         try:
-            x, x2, y = next(self.iter_ref)
+            x, y = next(self.iter_ref)
         except (AttributeError, StopIteration):
             self.iter_ref = iter(self.loader_ref)
-            x, x2, y = next(self.iter_ref)
-        return x, x2, y
+            x, y = next(self.iter_ref)
+        return x, y
 
     def __next__(self):
         x, y = self._fetch_inputs()
         if self.mode == 'train':
-            x_ref, x_ref2, y_ref = self._fetch_refs()
+            x_ref, y_ref = self._fetch_refs()
             z_trg = torch.randn(x.size(0), self.latent_dim)
-            z_trg2 = torch.randn(x.size(0), self.latent_dim)
             inputs = Munch(x_src=x, y_src=y, y_ref=y_ref,
-                           x_ref=x_ref, x_ref2=x_ref2,
-                           z_trg=z_trg, z_trg2=z_trg2)
+                           x_ref=x_ref,
+                           z_trg=z_trg)
         elif self.mode == 'val':
             x_ref, y_ref = self._fetch_inputs()
             inputs = Munch(x_src=x, y_src=y,
@@ -208,5 +204,5 @@ class InputFetcher:
         else:
             raise NotImplementedError
 
-        # return Munch({k: v.to(self.device)
-        #               for k, v in inputs.items()})
+        return Munch({k: v.to(self.device)
+                      for k, v in inputs.items()})
