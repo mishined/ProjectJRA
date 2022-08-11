@@ -35,7 +35,7 @@ class MRI_Images:
         self.shuffled_slices, self.sample = self.shuffle_and_batch(self.manipulated_images)
 
         self.img_size = 256
-        self.style_dim = 64
+        self.style_dim = 2
         self.w_hpf = 1
         self.latent_dim = 16
         self.num_domains = 2
