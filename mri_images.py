@@ -66,9 +66,7 @@ class MRI_Images:
         files = self.load_paths(data_path + "/*/*/*/*/*/*.nii")
         images = []
         ids = []
-        # print(len(files[0]))
-        # print(files[0])
-        # print(files[0][0])
+
         # only reading one csv file that contains both AD and CN information
         # manually change the Image Data ID in the file (can do through pandas)
         data = self.read_csv(data_path + "/*.csv")
