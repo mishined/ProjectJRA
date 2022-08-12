@@ -91,7 +91,7 @@ class MRI_Images:
             images.append(img)
         return images,ids
 
-    # function to extract the files needed from a path
+    # function to extract the paths for files froma path
     def load_paths(self, data_path):
         files = []
         files.append(glob.glob(data_path, 
@@ -207,7 +207,7 @@ class MRI_Images:
 
     
     # get a list of all the labels
-    def get_labels(self, ids,data_path):
+    def get_labels(self, ids, data_path):
         labels = []
         data = self.read_csv(data_path + "/*.csv")
         for id in ids:
