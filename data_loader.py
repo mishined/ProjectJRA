@@ -22,23 +22,23 @@ from torch.utils.data.sampler import WeightedRandomSampler
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
 
-
-def listdir(dname):
+# instead have the load_paths
+def listdir(dname): 
     fnames = list(chain(*[list(Path(dname).rglob('*.' + ext))
-                          for ext in ['png', 'jpg', 'jpeg', 'JPG']]))
+                          for ext in ['png', 'jpg', 'jpeg', 'JPG','nii']]))
     return fnames
 
 
 class DefaultDataset(data.Dataset):
-    def __init__(self, root, transform=None):
-        self.samples = listdir(root)
-        self.samples.sort()
+    def __init__(self, root, transform=None): # root - directory
+        self.samples = listdir(root) #load paths
+        self.samples.sort() # dont sort
         self.transform = transform
         self.targets = None
 
     def __getitem__(self, index):
         fname = self.samples[index]
-        img = Image.open(fname).convert('RGB')
+        img = Image.open(fname).convert('RGB') # load_images from paths 
         if self.transform is not None:
             img = self.transform(img)
         return img
@@ -54,6 +54,7 @@ class ReferenceDataset(data.Dataset):
 
     def _make_dataset(self, root):
         domains = os.listdir(root)
+        print(domains)
         fnames, labels = [], []
         for idx, domain in enumerate(sorted(domains)):
             class_dir = os.path.join(root, domain)
@@ -110,10 +111,10 @@ def get_train_loader(root, which='source', img_size=256,
     sampler = _make_balanced_sampler(dataset.targets)
     return data.DataLoader(dataset=dataset,
                            batch_size=batch_size,
-                           sampler=sampler,
-                           num_workers=num_workers,
-                           pin_memory=True,
-                           drop_last=True)
+                           sampler=sampler, #dont need
+                           num_workers=num_workers, #dont need 
+                           pin_memory=True, # dont need 
+                           drop_last=True) #dont need
 
 
 def get_eval_loader(root, img_size=256, batch_size=32,
