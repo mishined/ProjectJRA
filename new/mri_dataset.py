@@ -2,19 +2,24 @@ import os
 import random
 import glob
 
+
 # from munch import Munch
-# from PIL import Image
+from PIL import Image
 import numpy as np
 import nibabel as nib
 # import matplotlib.pyplot as plt
 
 import albumentations as A
+# conda install -c conda-forge albumentations
 # from albumentations import pytorch
+from albumentations.pytorch.transforms import ToTensorV2
+import scipy
+from sklearn import datasets
 
 import torch
 import pandas as pd
 from torch.utils import data
-from torchvision import transforms
+# from torchvision import transforms
 # from torchvision.datasets import ImageFolder
 
 
@@ -149,10 +154,11 @@ def get_train_loader(root, which='source', img_size=256,
 
     transform = A.Compose([
         A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
-        A.Resize([img_size,img_size]),
+        A.Resize(img_size,img_size),
         A.HorizontalFlip(p=0.5),
         # A.ToTensor(),
-        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ToTensorV2()
     ])
 
     # crop = transforms.RandomResizedCrop(
@@ -169,17 +175,23 @@ def get_train_loader(root, which='source', img_size=256,
     #                          std=[0.5, 0.5, 0.5]),
     # ])
 
-    dataset = MRIDataset(root, transform)
+    dataset = MRIDataset(root, transform = None)
     return data.DataLoader(dataset=dataset,
                            batch_size=batch_size)
 
 def get_test_loader(root, img_size=256, batch_size=32):
     print('Preparing DataLoader for the generation phase...')
-    transform = transforms.Compose([
-        transforms.Resize([img_size, img_size]),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5],
-                             std=[0.5, 0.5, 0.5]),
+    # transform = transforms.Compose([
+    #     transforms.Resize([img_size, img_size]),
+    #     transforms.ToTensor(),
+    #     transforms.Normalize(mean=[0.5, 0.5, 0.5],
+    #                          std=[0.5, 0.5, 0.5]),
+    # ])
+
+    transform = A.Compose([
+        A.Resize(img_size,img_size),
+        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ToTensorV2()
     ])
 
     dataset = MRIDataset(root, transform)
@@ -187,11 +199,25 @@ def get_test_loader(root, img_size=256, batch_size=32):
                            batch_size=batch_size)
 
 
+train_transform = A.Compose([
+        A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
+        A.Resize(256,256),
+        A.HorizontalFlip(p=0.5),
+        # A.ToTensor(),
+        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ToTensorV2()
+    ])
+
+
 # test = MRIDataset(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
 
-train_loader = get_train_loader(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
-test_loader = get_test_loader(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
+# train_loader = get_train_loader(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
+# test_loader = get_test_loader(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
+root1 = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data'
+batch_size = 32
+train_dataset = MRIDataset(root = root1, transform=train_transform)
 
+train_loader = data.DataLoader(train_dataset, batch_size=batch_size)
 
 # img = train_loader.dataset.__getitem__(0,root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
 # lab = train_loader.dataset.targets[0]

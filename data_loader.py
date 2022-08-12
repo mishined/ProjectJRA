@@ -13,7 +13,7 @@ import os
 import random
 
 from munch import Munch
-from PIL import Image
+# from PIL import Image
 import numpy as np
 
 import torch
