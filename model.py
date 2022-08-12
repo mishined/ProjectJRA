@@ -68,7 +68,7 @@ class AdaIN(nn.Module):
 
 
 class AdainResBlk(nn.Module):
-    def __init__(self, dim_in, dim_out, style_dim=64, w_hpf=0,
+    def __init__(self, dim_in, dim_out, style_dim=2, w_hpf=0,
                  actv=nn.LeakyReLU(0.2), upsample=False):
         super().__init__()
         self.w_hpf = w_hpf
@@ -124,7 +124,7 @@ class HighPass(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, img_size=256, style_dim=64, max_conv_dim=512, w_hpf=1):
+    def __init__(self, img_size=256, style_dim=2, max_conv_dim=512, w_hpf=1):
         super().__init__()
         dim_in = 2**14 // img_size  # 64
         # dim = 3
@@ -189,7 +189,7 @@ class Generator(nn.Module):
 
 
 class MappingNetwork(nn.Module):
-    def __init__(self, latent_dim=16, style_dim=64, num_domains=2):
+    def __init__(self, latent_dim=16, style_dim=2, num_domains=2):
         super().__init__()
         layers = []
         layers += [nn.Linear(latent_dim, 512)]
@@ -247,7 +247,7 @@ class Discriminator(nn.Module):
         return out
 
 class StyleEncoder(nn.Module):
-    def __init__(self, img_size=256, style_dim=64, num_domains=2, max_conv_dim=512):
+    def __init__(self, img_size=256, style_dim=2, num_domains=2, max_conv_dim=512):
         super().__init__()
         dim_in = 2**14 // img_size
         blocks = []
