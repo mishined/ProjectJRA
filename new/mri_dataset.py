@@ -2,17 +2,20 @@ import os
 import random
 import glob
 
-from munch import Munch
-from PIL import Image
+# from munch import Munch
+# from PIL import Image
 import numpy as np
 import nibabel as nib
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+
+import albumentations as A
+# from albumentations import pytorch
 
 import torch
 import pandas as pd
 from torch.utils import data
 from torchvision import transforms
-from torchvision.datasets import ImageFolder
+# from torchvision.datasets import ImageFolder
 
 
 # function to extract the paths for files from a path
@@ -144,19 +147,27 @@ def get_train_loader(root, which='source', img_size=256,
     print('Preparing DataLoader to fetch %s images '
           'during the training phase...' % which)
 
-    crop = transforms.RandomResizedCrop(
-        img_size, scale=[0.8, 1.0], ratio=[0.9, 1.1])
-    rand_crop = transforms.Lambda(
-        lambda x: crop(x) if random.random() < prob else x)
-
-    transform = transforms.Compose([
-        rand_crop,
-        transforms.Resize([img_size, img_size]),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5],
-                             std=[0.5, 0.5, 0.5]),
+    transform = A.Compose([
+        A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
+        A.Resize([img_size,img_size]),
+        A.HorizontalFlip(p=0.5),
+        # A.ToTensor(),
+        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
+
+    # crop = transforms.RandomResizedCrop(
+    #     img_size, scale=[0.8, 1.0], ratio=[0.9, 1.1])
+    # rand_crop = transforms.Lambda(
+    #     lambda x: crop(x) if random.random() < prob else x)
+
+    # transform = transforms.Compose([
+    #     transforms.ToTensor(),
+    #     rand_crop,
+    #     transforms.Resize([img_size, img_size]),
+    #     transforms.RandomHorizontalFlip(),
+    #     transforms.Normalize(mean=[0.5, 0.5, 0.5],
+    #                          std=[0.5, 0.5, 0.5]),
+    # ])
 
     dataset = MRIDataset(root, transform)
     return data.DataLoader(dataset=dataset,
@@ -193,6 +204,6 @@ print(f"Feature batch shape: {train_features.size()}")
 print(f"Labels batch shape: {train_labels.size()}")
 img = train_features[0]
 label = train_labels[0]
-plt.imshow(img, cmap="gray")
-plt.show()
+# plt.imshow(img, cmap="gray")
+# plt.show()
 print(f"Label: {label}")

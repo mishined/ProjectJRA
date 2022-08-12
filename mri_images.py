@@ -6,7 +6,7 @@ import torch.optim as optim
 import matplotlib
 import ipykernel
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import nilearn
 import nibabel as nib
 import monai
