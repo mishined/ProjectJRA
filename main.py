@@ -17,16 +17,24 @@ import torch
 from data_loader import get_train_loader
 from data_loader import get_test_loader
 from solver import Solver
+from mri_images import *
 
 
 def str2bool(v):
     return v.lower() in ('true')
 
 
+# def subdirs(dname):
+#     files = []
+#     files.append(glob.glob(dname, 
+#                     recursive = True))
+#     return files
+
 def subdirs(dname):
+    print([d for d in os.listdir(dname)
+            if os.path.isdir(os.path.join(dname, d))])
     return [d for d in os.listdir(dname)
             if os.path.isdir(os.path.join(dname, d))]
-
 
 def main(args):
     print(args)
@@ -133,8 +141,8 @@ if __name__ == '__main__':
                         help='Number of generated images per domain during sampling')
 
     # misc
-    parser.add_argument('--mode', type=str, required=True,
-                        choices=['train', 'sample', 'eval', 'align'],
+    parser.add_argument('--mode', type=str, default = "train",
+                        # choices=['train', 'sample', 'eval', 'align'],
                         help='This argument is used in solver')
     parser.add_argument('--num_workers', type=int, default=4,
                         help='Number of workers used in DataLoader')
@@ -142,13 +150,13 @@ if __name__ == '__main__':
                         help='Seed for random number generator')
 
     # directory for training
-    parser.add_argument('--train_img_dir', type=str, default='data/celeba_hq/train',
+    parser.add_argument('--train_img_dir', type=str, default='/Users/misheton/OneDrive-UniversityofSussex/JRA/Data',
                         help='Directory containing training images')
-    parser.add_argument('--val_img_dir', type=str, default='data/celeba_hq/val',
+    parser.add_argument('--val_img_dir', type=str, default='/Users/misheton/OneDrive-UniversityofSussex/JRA/Data',
                         help='Directory containing validation images')
-    parser.add_argument('--sample_dir', type=str, default='expr/samples',
+    parser.add_argument('--sample_dir', type=str, default='/Users/misheton/OneDrive-UniversityofSussex/JRA/results',
                         help='Directory for saving generated images')
-    parser.add_argument('--checkpoint_dir', type=str, default='expr/checkpoints',
+    parser.add_argument('--checkpoint_dir', type=str, default='/Users/misheton/OneDrive-UniversityofSussex/JRA/results',
                         help='Directory for saving network checkpoints')
 
     # directory for calculating metrics
