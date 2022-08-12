@@ -6,6 +6,7 @@ from munch import Munch
 from PIL import Image
 import numpy as np
 import nibabel as nib
+import matplotlib.pyplot as plt
 
 import torch
 import pandas as pd
@@ -29,7 +30,7 @@ class MRIDataset(data.Dataset):
         self.samples = self.samples[0]
         self.transform = transform
 
-    def __getitem__(self, index, root):
+    def __getitem__(self, index, root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data'):
         fname = self.samples[index]
         label = self.targets[index]
         img = self.load_image_from_path(fname, root) # load_images from paths 
@@ -175,11 +176,23 @@ def get_test_loader(root, img_size=256, batch_size=32):
                            batch_size=batch_size)
 
 
-test = MRIDataset(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
+# test = MRIDataset(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
 
-data1 = get_train_loader(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
+train_loader = get_train_loader(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
+test_loader = get_test_loader(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
 
-img = data1.dataset.__getitem__(0,root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
-lab = data1.dataset.targets[0]
-print(img)
-print(lab)
+
+# img = train_loader.dataset.__getitem__(0,root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
+# lab = train_loader.dataset.targets[0]
+# print(img)
+# print(lab)
+
+# Display image and label.
+train_features, train_labels = next(iter(train_loader))
+print(f"Feature batch shape: {train_features.size()}")
+print(f"Labels batch shape: {train_labels.size()}")
+img = train_features[0]
+label = train_labels[0]
+plt.imshow(img, cmap="gray")
+plt.show()
+print(f"Label: {label}")
