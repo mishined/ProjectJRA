@@ -14,10 +14,10 @@ from munch import Munch
 from torch.backends import cudnn
 import torch
 
-from data_loader import get_train_loader
-from data_loader import get_test_loader
+# from data_loader import get_train_loader
+# from data_loader import get_test_loader
 from solver import Solver
-from mri_images import *
+from new.mri_dataset import *
 
 
 def str2bool(v):
@@ -50,41 +50,34 @@ def main(args):
                                              which='source',
                                              img_size=args.img_size,
                                              batch_size=args.batch_size,
-                                             prob=args.randcrop_prob,
-                                             num_workers=args.num_workers),
-                        ref=get_train_loader(root=args.train_img_dir,
-                                             which='reference',
-                                             img_size=args.img_size,
-                                             batch_size=args.batch_size,
-                                             prob=args.randcrop_prob,
-                                             num_workers=args.num_workers),
+                                             p=args.randcrop_prob),
+                        # ref=get_train_loader(root=args.train_img_dir,
+                        #                      which='reference',
+                        #                      img_size=args.img_size,
+                        #                      batch_size=args.batch_size,
+                        #                      p=args.randcrop_prob),
                         val=get_test_loader(root=args.val_img_dir,
                                             img_size=args.img_size,
-                                            batch_size=args.val_batch_size,
-                                            shuffle=True,
-                                            num_workers=args.num_workers))
+                                            batch_size=args.val_batch_size))
         solver.train(loaders)
-    elif args.mode == 'sample':
-        assert len(subdirs(args.src_dir)) == args.num_domains
-        assert len(subdirs(args.ref_dir)) == args.num_domains
-        loaders = Munch(src=get_test_loader(root=args.src_dir,
-                                            img_size=args.img_size,
-                                            batch_size=args.val_batch_size,
-                                            shuffle=False,
-                                            num_workers=args.num_workers),
-                        ref=get_test_loader(root=args.ref_dir,
-                                            img_size=args.img_size,
-                                            batch_size=args.val_batch_size,
-                                            shuffle=False,
-                                            num_workers=args.num_workers))
-        solver.sample(loaders)
-    elif args.mode == 'eval':
-        solver.evaluate()
-    elif args.mode == 'align':
-        from wing import align_faces
-        align_faces(args, args.inp_dir, args.out_dir)
-    else:
-        raise NotImplementedError
+    # elif args.mode == 'sample':
+    #     assert len(subdirs(args.src_dir)) == args.num_domains
+    #     assert len(subdirs(args.ref_dir)) == args.num_domains
+    #     loaders = Munch(src=get_test_loader(root=args.src_dir,
+    #                                         img_size=args.img_size,
+    #                                         batch_size=args.val_batch_size,
+    #                                         shuffle=False),
+    #                     ref=get_test_loader(root=args.ref_dir,
+    #                                         img_size=args.img_size,
+    #                                         batch_size=args.val_batch_size))
+    #     solver.sample(loaders)
+    # elif args.mode == 'eval':
+    #     solver.evaluate()
+    # elif args.mode == 'align':
+    #     from wing import align_faces
+    #     align_faces(args, args.inp_dir, args.out_dir)
+    # else:
+    #     raise NotImplementedError
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ import os
 import random
 import glob
 
+from munch import Munch
 
 # from munch import Munch
 from PIL import Image
@@ -42,6 +43,8 @@ class MRIDataset(data.Dataset):
         fname = self.samples[index]
         label = self.targets[index]
         img = self.load_image_from_path(fname, root) # load_images from paths 
+        img = self.random_slice(img)
+        # print(self.transform)
         if self.transform is not None:
             img = self.transform
         return img, label
@@ -68,7 +71,7 @@ class MRIDataset(data.Dataset):
         return fnames, labels
     
     def load_image_from_path(self, file_path, data_path):
-        print(file_path)
+        # print(file_path)
         img = self.load_image(file_path)
         # only reading one csv file that contains both AD and CN information
         # manually change the Image Data ID in the file (can do through pandas)
@@ -143,12 +146,28 @@ class MRIDataset(data.Dataset):
         img_s = np.concatenate((data_1, data_2, data_3), axis=-1)
         return img_s
 
+    
+    def random_slice(self, img):
+        # print("----------------------------------", img, type(img))
+        # get the maximum slice number
+        a = img.shape[0]
+        # get a random number from the number of slices
+        n = random.randint(0,a-1)
+        # add a channel with the slice number
+        slice_1 = self.add_channel_slice(img, n)
+        # take only the randomly chosen slice
+        slice = slice_1[n, :, :, :]
+        # slice number
+        # print(n)
+        # slice shape
+        return slice
+
     def __len__(self):
         return len(self.samples)
 
 
 def get_train_loader(root, which='source', img_size=256,
-                     batch_size=8, prob=0.5):
+                     batch_size=8, p=0.5):
     print('Preparing DataLoader to fetch %s images '
           'during the training phase...' % which)
 
@@ -175,7 +194,7 @@ def get_train_loader(root, which='source', img_size=256,
     #                          std=[0.5, 0.5, 0.5]),
     # ])
 
-    dataset = MRIDataset(root, transform = None)
+    dataset = MRIDataset(root, transform = transform)
     return data.DataLoader(dataset=dataset,
                            batch_size=batch_size)
 
@@ -199,6 +218,49 @@ def get_test_loader(root, img_size=256, batch_size=32):
                            batch_size=batch_size)
 
 
+class InputFetcher:
+    def __init__(self, loader, latent_dim=16, mode='train'):
+        self.loader = loader
+        self.latent_dim = latent_dim
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.mode = mode
+
+    def _fetch_inputs(self):
+        # try:
+        #     x, y = next(self.iter)
+        # except (AttributeError, StopIteration):
+        self.iter = iter(self.loader)
+        x, y = next(self.iter),0
+        return x, y
+
+    def _fetch_refs(self):
+        try:
+            x, y = next(self.iter_ref)
+        except (AttributeError, StopIteration):
+            self.iter_ref = iter(self.loader_ref)
+            x, y = next(self.iter_ref)
+        return x, y
+
+    def __next__(self):
+        x, y = self._fetch_inputs()
+        if self.mode == 'train':
+            x_ref, y_ref = self._fetch_refs()
+            z_trg = torch.randn(x.size(0), self.latent_dim)
+            inputs = Munch(x_src=x, y_src=y, y_ref=y_ref,
+                           x_ref=x_ref,
+                           z_trg=z_trg)
+        elif self.mode == 'val':
+            x_ref, y_ref = self._fetch_inputs()
+            inputs = Munch(x_src=x, y_src=y,
+                           x_ref=x_ref, y_ref=y_ref)
+        elif self.mode == 'test':
+            inputs = Munch(x=x, y=y)
+        else:
+            raise NotImplementedError
+
+        return Munch({k: v.to(self.device)
+                      for k, v in inputs.items()})
+
 train_transform = A.Compose([
         A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
         A.Resize(256,256),
@@ -215,7 +277,7 @@ train_transform = A.Compose([
 # test_loader = get_test_loader(root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data')
 root1 = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data'
 batch_size = 32
-train_dataset = MRIDataset(root = root1, transform=train_transform)
+train_dataset = MRIDataset(root = root1)
 
 train_loader = data.DataLoader(train_dataset, batch_size=batch_size)
 
@@ -227,7 +289,7 @@ train_loader = data.DataLoader(train_dataset, batch_size=batch_size)
 # Display image and label.
 train_features, train_labels = next(iter(train_loader))
 print(f"Feature batch shape: {train_features.size()}")
-print(f"Labels batch shape: {train_labels.size()}")
+print(f"Labels batch shape: {print(train_labels)}")
 img = train_features[0]
 label = train_labels[0]
 # plt.imshow(img, cmap="gray")

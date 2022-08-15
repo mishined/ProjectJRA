@@ -20,7 +20,7 @@ import torch.nn.functional as F
 
 from model import build_model
 from checkpoint import CheckpointIO
-from data_loader import InputFetcher
+from new.mri_dataset import *
 import core.utils as utils
 from eval import calculate_metrics
 
@@ -77,7 +77,8 @@ class Solver(nn.Module):
         for optim in self.optims.values():
             optim.zero_grad()
 
-    def train(self):
+    def train(self, loader):
+        self.loader = loader
         args = self.args
         nets = self.nets
         nets_ema = self.nets_ema
@@ -85,9 +86,9 @@ class Solver(nn.Module):
 
         # fetch random validation images for debugging
         print("hi")
-        fetcher = InputFetcher(args.sample, args.loader_ref, args.latent_dim, 'train')
+        fetcher = InputFetcher(self.loader, args.latent_dim, 'train')
         print("hi2")
-        fetcher_val = InputFetcher(args.sample, None, args.latent_dim, 'val')
+        fetcher_val = InputFetcher(self.loader, args.latent_dim, 'val')
         print("hi3")
         inputs_val = next(fetcher_val)
         print("hi4")
