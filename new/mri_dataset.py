@@ -35,9 +35,9 @@ def load_paths(data_path):
 
 class MRIDataset(data.Dataset):
     def __init__(self, root, transform=None): # root - directory
+        self.data = self.read_csv(root + "/*.csv")
         self.samples, self.targets = self._make_dataset(root, self.data) #load paths and labels
         self.samples = self.samples[0]
-        self.data = self.read_csv(root + "/*.csv")
         self.transform = transform
 
     def __getitem__(self, index):
@@ -63,8 +63,9 @@ class MRIDataset(data.Dataset):
                 ind = id.find('_')
                 id = id[ind+1:]
             # print(id)
-            index = data.ImageDataID[data.ImageDataID == id].index[0]
-            if data.Group[index] == "AD":
+            # index = data.ImageDataID[data.ImageDataID == id].index[0]
+            index=data.loc[data['ImageDataID'] == id].index.values
+            if data.Group[index[0]] == "AD":
                 labels.append(1)
             else:
                 labels.append(0)
@@ -89,7 +90,8 @@ class MRIDataset(data.Dataset):
         file = glob.glob(data_path, 
                     recursive = True)
         data = pd.read_csv(file[0])
-        return data
+        df= pd.DataFrame(data)
+        return df
     
     # function to load data from a single file
     def load_image(self, mri_file):
