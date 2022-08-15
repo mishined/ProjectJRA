@@ -86,11 +86,11 @@ class Solver(nn.Module):
 
         # fetch random validation images for debugging
         print("hi")
-        fetcher = InputFetcher(self.loader, args.latent_dim, 'train')
+        fetcher = InputFetcher(self.loader['src'], args.latent_dim, 'train')
         print("hi2")
-        fetcher_val = InputFetcher(self.loader, args.latent_dim, 'val')
+        fetcher_val = InputFetcher(self.loader['val'], args.latent_dim, 'val')
         print("hi3")
-        inputs_val = next(fetcher_val)
+        # inputs_val = next(fetcher_val)
         print("hi4")
 
         # resume training if necessary

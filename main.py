@@ -46,6 +46,19 @@ def main(args):
     if args.mode == 'train':
         assert len(subdirs(args.train_img_dir)) == args.num_domains
         assert len(subdirs(args.val_img_dir)) == args.num_domains
+        # loaders = Munch(src=get_train_loader(root=args.train_img_dir,
+        #                                      which='source',
+        #                                      img_size=args.img_size,
+        #                                      batch_size=args.batch_size,
+        #                                      p=args.randcrop_prob),
+        #                 # ref=get_train_loader(root=args.train_img_dir,
+        #                 #                      which='reference',
+        #                 #                      img_size=args.img_size,
+        #                 #                      batch_size=args.batch_size,
+        #                 #                      p=args.randcrop_prob),
+        #                 val=get_test_loader(root=args.val_img_dir,
+        #                                     img_size=args.img_size,
+        #                                     batch_size=args.val_batch_size))
         loaders = Munch(src=get_train_loader(root=args.train_img_dir,
                                              which='source',
                                              img_size=args.img_size,
@@ -59,6 +72,7 @@ def main(args):
                         val=get_test_loader(root=args.val_img_dir,
                                             img_size=args.img_size,
                                             batch_size=args.val_batch_size))
+        print(loaders['src'])
         solver.train(loaders)
     # elif args.mode == 'sample':
     #     assert len(subdirs(args.src_dir)) == args.num_domains

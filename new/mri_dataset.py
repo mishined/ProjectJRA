@@ -226,16 +226,18 @@ class InputFetcher:
         # try:
         #     x, y = next(self.iter)
         # except (AttributeError, StopIteration):
-        self.iter = iter(self.loader)
-        x, y = next(self.iter),0
+        # self.iter = iter(self.loader)
+        # x, y = next(self.iter_ref)
+        x, y = next(iter(self.loader))
         return x, y
 
     def _fetch_refs(self):
-        try:
-            x, y = next(self.iter_ref)
-        except (AttributeError, StopIteration):
-            self.iter_ref = iter(self.loader)
-            x, y = next(self.iter_ref)
+        # try:
+        #     x, y = next(self.iter)
+        # except (AttributeError, StopIteration):
+        # self.iter_ref = iter(self.loader)
+        # x, y = next(self.iter_ref)
+        x, y = next(iter(self.loader))
         return x, y
 
     def __next__(self):
@@ -256,9 +258,10 @@ class InputFetcher:
         else:
             raise NotImplementedError
 
-        print(v for k, v in inputs.items())
         return Munch({k: v.to(self.device)
                       for k, v in inputs.items()})
+
+        # return Munch(inputs.x_src, inputs.y_src)
 
 train_transform = A.Compose([
         A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
@@ -288,7 +291,7 @@ train_loader = data.DataLoader(train_dataset, batch_size=batch_size)
 # Display image and label.
 train_features, train_labels = next(iter(train_loader))
 print(f"Feature batch shape: {train_features.size()}")
-print(f"Labels batch shape: {print(train_labels)}")
+print(f"Labels batch shape: {train_labels.size()}")
 img = train_features[0]
 label = train_labels[0]
 # plt.imshow(img, cmap="gray")
