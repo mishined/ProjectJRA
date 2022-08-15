@@ -43,7 +43,7 @@ class MRIDataset(data.Dataset):
         label = self.targets[index]
         img = self.load_image_from_path(fname, root) # load_images from paths 
         if self.transform is not None:
-            img = self.transform(img)
+            img = self.transform
         return img, label
 
     def _make_dataset(self, root):
