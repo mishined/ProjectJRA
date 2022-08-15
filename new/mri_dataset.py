@@ -37,12 +37,13 @@ class MRIDataset(data.Dataset):
     def __init__(self, root, transform=None): # root - directory
         self.samples, self.targets = self._make_dataset(root) #load paths and labels
         self.samples = self.samples[0]
+        self.data = self.read_csv(root + "/*.csv")
         self.transform = transform
 
     def __getitem__(self, index, root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data'):
         fname = self.samples[index]
         label = self.targets[index]
-        img = self.load_image_from_path(fname, root) # load_images from paths 
+        img = self.load_image_from_path(fname, self.data) # load_images from paths 
         img = self.random_slice(img)
         # print(self.transform)
         if self.transform is not None:
@@ -70,12 +71,11 @@ class MRIDataset(data.Dataset):
                 labels.append(0)
         return fnames, labels
     
-    def load_image_from_path(self, file_path, data_path):
+    def load_image_from_path(self, file_path, data):
         # print(file_path)
         img = self.load_image(file_path)
         # only reading one csv file that contains both AD and CN information
         # manually change the Image Data ID in the file (can do through pandas)
-        data = self.read_csv(data_path + "/*.csv")
         id = file_path[-11:-4]
         if id[0] == "_":
             id = id[1:]
@@ -243,6 +243,7 @@ class InputFetcher:
 
     def __next__(self):
         x, y = self._fetch_inputs()
+        print(y)
         if self.mode == 'train':
             x_ref, y_ref = self._fetch_refs()
             z_trg = torch.randn(x.size(0), self.latent_dim)
@@ -258,6 +259,7 @@ class InputFetcher:
         else:
             raise NotImplementedError
 
+        print(v for k, v in inputs.items())
         return Munch({k: v.to(self.device)
                       for k, v in inputs.items()})
 
