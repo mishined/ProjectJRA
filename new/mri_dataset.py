@@ -65,9 +65,9 @@ class MRIDataset(data.Dataset):
             # print(id)
             index = data.ImageDataID[data.ImageDataID == id].index[0]
             if data.Group[index] == "AD":
-                labels.append("AD")
+                labels.append(1)
             else:
-                labels.append("CN")
+                labels.append(0)
         return fnames, labels
     
     def load_image_from_path(self, file_path, data_path):
@@ -237,7 +237,7 @@ class InputFetcher:
         try:
             x, y = next(self.iter_ref)
         except (AttributeError, StopIteration):
-            self.iter_ref = iter(self.loader_ref)
+            self.iter_ref = iter(self.loader)
             x, y = next(self.iter_ref)
         return x, y
 
