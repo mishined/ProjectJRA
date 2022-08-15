@@ -35,27 +35,26 @@ def load_paths(data_path):
 
 class MRIDataset(data.Dataset):
     def __init__(self, root, transform=None): # root - directory
-        self.samples, self.targets = self._make_dataset(root) #load paths and labels
+        self.samples, self.targets = self._make_dataset(root, self.data) #load paths and labels
         self.samples = self.samples[0]
         self.data = self.read_csv(root + "/*.csv")
         self.transform = transform
 
-    def __getitem__(self, index, root = '/Users/misheton/OneDrive-UniversityofSussex/JRA/Data'):
+    def __getitem__(self, index):
         fname = self.samples[index]
         label = self.targets[index]
-        img = self.load_image_from_path(fname, self.data) # load_images from paths 
+        img = self.load_image_from_path(fname, label) # load_images from paths 
         img = self.random_slice(img)
         # print(self.transform)
         if self.transform is not None:
             img = self.transform
         return img, label
 
-    def _make_dataset(self, root):
+    def _make_dataset(self, root, data):
         # get all the files paths
         fnames = load_paths(root)
         labels = []
         # get the csv file
-        data = self.read_csv(root + "/*.csv")
         # find the corresponding label for all files and add to labels
         for a in range(len(fnames[0])):
             # print("filename", a)
@@ -71,17 +70,13 @@ class MRIDataset(data.Dataset):
                 labels.append(0)
         return fnames, labels
     
-    def load_image_from_path(self, file_path, data):
+    def load_image_from_path(self, file_path, label):
         # print(file_path)
         img = self.load_image(file_path)
         # only reading one csv file that contains both AD and CN information
         # manually change the Image Data ID in the file (can do through pandas)
-        id = file_path[-11:-4]
-        if id[0] == "_":
-            id = id[1:]
-        index = data.ImageDataID[data.ImageDataID == id].index[0]
         # add target label as a colour channel
-        if data.Group[index] == "AD":
+        if label == 1:
             img = self.add_channel_zeros(img)
             print("AD")
         else:
