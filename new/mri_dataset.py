@@ -20,6 +20,7 @@ from sklearn import datasets
 import torch
 import pandas as pd
 from torch.utils import data
+# import tensorflow as tf
 # from torchvision import transforms
 # from torchvision.datasets import ImageFolder
 
@@ -168,15 +169,16 @@ def get_train_loader(root, which='source', img_size=256,
     print('Preparing DataLoader to fetch %s images '
           'during the training phase...' % which)
 
-    transform = A.Compose([
-        A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
-        A.Resize(img_size,img_size),
-        A.HorizontalFlip(p=0.5),
-        # A.ToTensor(),
-        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-        ToTensorV2()
-    ])
+    transform = ToTensorV2()
 
+# A.Compose([
+#         A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
+#         A.Resize(img_size,img_size),
+#         A.HorizontalFlip(p=0.5),
+#         # A.ToTensor(),
+#         A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+#         ToTensorV2()
+#     ])
     # crop = transforms.RandomResizedCrop(
     #     img_size, scale=[0.8, 1.0], ratio=[0.9, 1.1])
     # rand_crop = transforms.Lambda(
@@ -226,18 +228,19 @@ class InputFetcher:
         # try:
         #     x, y = next(self.iter)
         # except (AttributeError, StopIteration):
-        # self.iter = iter(self.loader)
-        # x, y = next(self.iter_ref)
-        x, y = next(iter(self.loader))
+        self.iter = iter(self.loader)
+        # self.iter = tf.convert_to_tensor(self.iter)
+        x, y = next(self.iter)
+        # x, y = next(iter(self.loader))
         return x, y
 
     def _fetch_refs(self):
         # try:
         #     x, y = next(self.iter)
         # except (AttributeError, StopIteration):
-        # self.iter_ref = iter(self.loader)
-        # x, y = next(self.iter_ref)
-        x, y = next(iter(self.loader))
+        self.iter_ref = iter(self.loader)
+        x, y = next(self.iter_ref)
+        # x, y = next(iter(self.loader))
         return x, y
 
     def __next__(self):

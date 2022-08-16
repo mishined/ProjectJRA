@@ -90,7 +90,7 @@ class Solver(nn.Module):
         print("hi2")
         fetcher_val = InputFetcher(self.loader['val'], args.latent_dim, 'val')
         print("hi3")
-        # inputs_val = next(fetcher_val)
+        inputs_val = next(fetcher_val)
         print("hi4")
 
         # resume training if necessary
