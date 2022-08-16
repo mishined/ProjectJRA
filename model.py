@@ -1,6 +1,6 @@
 import copy
 import math
-import munch
+# import munch
 
 from munch import Munch
 import numpy as np
@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from wing import FAN
+# from wing import FAN
 
 class ResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, actv=nn.LeakyReLU(0.2),

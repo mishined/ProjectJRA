@@ -1,11 +1,11 @@
 numpy~=1.19.5
 scipy~=1.5.4
-tensorflow~=2.5.0
-tqdm~=4.61.0
 matplotlib~=3.3.4
-nibabel~=3.2.1
-nilearn==0.9.0
+nibabel~=3.2.2
 scikit-learn~=0.24.2
-tensorflow-addons~=0.13.0
-tensorflow-probability~=0.13.0
-torch== 1.8.0
+torch==1.8.0
+albumentations==1.2.1
+pandas==1.4.3
+munch==2.5.1.dev12
+torchvision==0.13.1
+ffmpeg-python==0.2.0

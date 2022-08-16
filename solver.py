@@ -19,8 +19,8 @@ import torch.nn.functional as F
 
 
 from model import build_model
-from checkpoint import CheckpointIO
-from new.mri_dataset import *
+# from checkpoint import CheckpointIO
+from new.mri_dataset import InputFetcher
 import core.utils as utils
 from eval import calculate_metrics
 

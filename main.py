@@ -11,13 +11,13 @@ import os
 import argparse
 
 from munch import Munch
-from torch.backends import cudnn
+# from torch.backends import cudnn
 import torch
 
 # from data_loader import get_train_loader
 # from data_loader import get_test_loader
 from solver import Solver
-from new.mri_dataset import *
+from new.mri_dataset import get_train_loader, get_test_loader
 
 
 def str2bool(v):
@@ -38,7 +38,7 @@ def subdirs(dname):
 
 def main(args):
     print(args)
-    cudnn.benchmark = True
+    # cudnn.benchmark = True
     torch.manual_seed(args.seed)
 
     solver = Solver(args)

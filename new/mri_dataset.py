@@ -1,11 +1,11 @@
-import os
+# import os
 import random
 import glob
 
 from munch import Munch
 
 # from munch import Munch
-from PIL import Image
+# from PIL import Image
 import numpy as np
 import nibabel as nib
 # import matplotlib.pyplot as plt
@@ -14,13 +14,12 @@ import albumentations as A
 # conda install -c conda-forge albumentations
 # from albumentations import pytorch
 from albumentations.pytorch.transforms import ToTensorV2
-import scipy
-from sklearn import datasets
+# import scipy
+# from sklearn import datasets
 
 import torch
 import pandas as pd
 from torch.utils import data
-# import tensorflow as tf
 # from torchvision import transforms
 # from torchvision.datasets import ImageFolder
 
@@ -228,11 +227,11 @@ class InputFetcher:
         # try:
         #     x, y = next(self.iter)
         # except (AttributeError, StopIteration):
-        self.iter = iter(self.loader)
+        # self.iter = iter(self.loader)
         # self.iter = tf.convert_to_tensor(self.iter)
-        x, y = next(self.iter)
-        # x, y = next(iter(self.loader))
-        return x, y
+        # x, y = next(self.iter)
+        x, y = next(iter(self.loader))
+        return torch.tensor(x, y)
 
     def _fetch_refs(self):
         # try:
@@ -262,7 +261,7 @@ class InputFetcher:
             raise NotImplementedError
 
         return Munch({k: v.to(self.device)
-                      for k, v in inputs.items()})
+                      for k, v in torch.tensor(inputs.items())})
 
         # return Munch(inputs.x_src, inputs.y_src)
 
