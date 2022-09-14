@@ -47,7 +47,7 @@ class MRIDataset(data.Dataset):
         img = self.random_slice(img)
         # print(self.transform)
         if self.transform is not None:
-            img = self.transform
+            img = self.transform(image=img)
         return img, label
 
     def _make_dataset(self, root, data):
@@ -168,16 +168,14 @@ def get_train_loader(root, which='source', img_size=256,
     print('Preparing DataLoader to fetch %s images '
           'during the training phase...' % which)
 
-    transform = ToTensorV2()
-
-# A.Compose([
-#         A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
-#         A.Resize(img_size,img_size),
-#         A.HorizontalFlip(p=0.5),
-#         # A.ToTensor(),
-#         A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-#         ToTensorV2()
-#     ])
+    transform = A.Compose([
+        A.RandomResizedCrop(256,256,scale=[0.8, 1.0], ratio=[0.9, 1.1]),
+        A.Resize(img_size,img_size),
+        A.HorizontalFlip(p=0.5),
+        # A.ToTensor(),
+        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ToTensorV2()
+    ])
     # crop = transforms.RandomResizedCrop(
     #     img_size, scale=[0.8, 1.0], ratio=[0.9, 1.1])
     # rand_crop = transforms.Lambda(
@@ -231,7 +229,7 @@ class InputFetcher:
         # self.iter = tf.convert_to_tensor(self.iter)
         # x, y = next(self.iter)
         x, y = next(iter(self.loader))
-        return torch.tensor(x, y)
+        return x, y
 
     def _fetch_refs(self):
         # try:
@@ -247,21 +245,21 @@ class InputFetcher:
         print(y)
         if self.mode == 'train':
             x_ref, y_ref = self._fetch_refs()
-            z_trg = torch.randn(x.size(0), self.latent_dim)
+            z_trg = torch.randn(len(x), self.latent_dim)
             inputs = Munch(x_src=x, y_src=y, y_ref=y_ref,
                            x_ref=x_ref,
                            z_trg=z_trg)
         elif self.mode == 'val':
             x_ref, y_ref = self._fetch_inputs()
-            inputs = Munch(x_src=x, y_src=y,
+            inputs = torch.Tensor(x_src=x, y_src=y,
                            x_ref=x_ref, y_ref=y_ref)
         elif self.mode == 'test':
-            inputs = Munch(x=x, y=y)
+            inputs = torch.Tensor(x=x, y=y)
         else:
             raise NotImplementedError
 
-        return Munch({k: v.to(self.device)
-                      for k, v in torch.tensor(inputs.items())})
+        return Munch({k: torch.tensor(v).to(self.device)
+                      for k, v in inputs.items()})
 
         # return Munch(inputs.x_src, inputs.y_src)
 
