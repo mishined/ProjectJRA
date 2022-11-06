@@ -1,4 +1,4 @@
-# JRA
+# Juniour Research Associate Scheme
 My JRA project 
 
 Working with NiFTI images: 
